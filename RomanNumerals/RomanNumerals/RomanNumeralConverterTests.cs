@@ -4,14 +4,11 @@ namespace RomanNumerals;
 
 public class RomanNumeralConverterTests
 {
-    [SetUp]
-    public void Setup()
+    [TestCase("I", 1)]
+    public void FromRomanNumeralConvertsCorrectly(string input, int expected)
     {
-    }
-
-    [Test]
-    public void Test1()
-    {
-        Assert.Pass();
+        var actual = RomanNumeralConverter.FromRomanNumeral(input);
+        
+        Assert.That(actual, Is.EqualTo(expected));
     }
 }
