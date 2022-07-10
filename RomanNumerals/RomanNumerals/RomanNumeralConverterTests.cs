@@ -52,4 +52,10 @@ public class RomanNumeralConverterTests
         var ex = Assert.Throws<FormatException>(() => RomanNumeralConverter.FromRomanNumeral(invalid));
         Assert.That(ex, Has.Message.Contains(invalid));
     }
+
+    [Test]
+    public void FromRomanNumeralThrowsArgumentNullIfInputIsNull()
+    {
+        Assert.Throws<ArgumentNullException>(() => RomanNumeralConverter.FromRomanNumeral(null));
+    }
 }

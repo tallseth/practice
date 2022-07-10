@@ -9,6 +9,11 @@ public class RomanNumeralConverter
         var originalInput = roman;
         var amount = 0;
 
+        if (originalInput == null)
+        {
+            throw new ArgumentNullException("Roman numeral cannot be null");
+        }
+
         foreach (var definition in new [] {I, IV, V, IX, X, XL, L, XC, C, CM, M})
         {
             (amount, roman) = CountTermIfPresent(amount, roman, definition);
