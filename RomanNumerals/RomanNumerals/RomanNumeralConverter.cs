@@ -15,6 +15,8 @@ public class RomanNumeralConverter
         (amount, roman) = CountTermIfPresent(amount, roman, "V", 5);
         (amount, roman) = CountTermIfPresent(amount, roman, "IX", 9);
         (amount, roman) = CountTermIfPresent(amount, roman, "X", 10);
+        (amount, roman) = CountTermIfPresent(amount, roman, "X", 10);
+        (amount, roman) = CountTermIfPresent(amount, roman, "X", 10);
 
         return amount;
     }
