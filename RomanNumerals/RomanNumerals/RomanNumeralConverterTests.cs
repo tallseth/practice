@@ -5,6 +5,7 @@ namespace RomanNumerals;
 public class RomanNumeralConverterTests
 {
     [TestCase("I", 1)]
+    [TestCase("II", 2)]
     public void FromRomanNumeralConvertsCorrectly(string input, int expected)
     {
         var actual = RomanNumeralConverter.FromRomanNumeral(input);
