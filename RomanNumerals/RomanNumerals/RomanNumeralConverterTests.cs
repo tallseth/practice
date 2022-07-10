@@ -25,6 +25,12 @@ public class RomanNumeralConverterTests
     [TestCase("XIX", 19)]
     [TestCase("XX", 20)]
     [TestCase("XXX", 30)]
+    [TestCase("MMM", 3000)]
+    [TestCase("M", 1000)]
+    [TestCase("C", 100)]
+    [TestCase("CCC", 300)]
+    [TestCase("XC", 90)]
+    [TestCase("MMCMXLVII", 2947)]
     public void FromRomanNumeralConvertsCorrectly(string input, int expected)
     {
         var actual = RomanNumeralConverter.FromRomanNumeral(input);
