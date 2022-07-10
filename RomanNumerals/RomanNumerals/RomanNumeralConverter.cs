@@ -13,9 +13,20 @@ public class RomanNumeralConverter
         roman = roman.TrimEnd('I');
 
         if (roman.EndsWith("IV"))
+        {
             amount += 4;
-        else if (roman.EndsWith("V")) 
+            roman = roman.Substring(0, roman.Length - 2);
+        }
+        else if (roman.EndsWith("V"))
+        {
             amount += 5;
+            roman = roman.Substring(0, roman.Length - 1);
+        }
+
+        if (roman.EndsWith("IX"))
+            amount += 9;
+        else if (roman.EndsWith("X")) 
+            amount += 10;        
 
         return amount;
     }
