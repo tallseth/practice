@@ -1,9 +1,11 @@
+using System;
 using NUnit.Framework;
 
 namespace RomanNumerals;
 
 public class RomanNumeralConverterTests
 {
+    [TestCase("", 0)]
     [TestCase("I", 1)]
     [TestCase("II", 2)]
     [TestCase("III", 3)]
@@ -36,5 +38,18 @@ public class RomanNumeralConverterTests
         var actual = RomanNumeralConverter.FromRomanNumeral(input);
         
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    [TestCase("test")]
+    [TestCase("iii")]
+    [TestCase("IX  \n \r ")]
+    [TestCase(" \t M")]
+    [TestCase("XLVIbanana")]
+    [TestCase("parachuteMM")]
+    [TestCase("  \n \t \r ")]
+    public void FormRomanNumeralThrowsFormatExceptionOnInvalidInput(string invalid)
+    {
+        var ex = Assert.Throws<FormatException>(() => RomanNumeralConverter.FromRomanNumeral(invalid));
+        Assert.That(ex, Has.Message.Contains(invalid));
     }
 }

@@ -6,11 +6,17 @@ public class RomanNumeralConverter
 {
     public static int FromRomanNumeral(string roman)
     {
+        var originalInput = roman;
         var amount = 0;
 
         foreach (var definition in new [] {I, IV, V, IX, X, XL, L, XC, C, CM, M})
         {
             (amount, roman) = CountTermIfPresent(amount, roman, definition);
+        }
+
+        if (roman.Length > 0)
+        {
+            throw new FormatException($"Invalid Roman Numeral: '{originalInput}'");
         }
 
         return amount;
