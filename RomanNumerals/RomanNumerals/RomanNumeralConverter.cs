@@ -1,30 +1,22 @@
-﻿namespace RomanNumerals;
+﻿using System.Linq;
+
+namespace RomanNumerals;
 
 public class RomanNumeralConverter
 {
     public static int FromRomanNumeral(string roman)
     {
-        if (roman == "VIII")
-            return 8;
-        
-        if (roman == "VII")
-            return 7;
-        
-        if (roman == "VI")
-            return 6;
-        
-        if (roman == "V")
-            return 5;
-        
-        if (roman == "IV")
-            return 4;
-        
-        if (roman == "III")
-            return 3;
-        
-        if (roman == "II")
-            return 2;
+        var amount = 0;
 
-        return 1;
+        amount += roman.Reverse().TakeWhile(c => c.Equals('I')).Count();
+
+        roman = roman.TrimEnd('I');
+
+        if (roman.EndsWith("IV"))
+            amount += 4;
+        else if (roman.EndsWith("V")) 
+            amount += 5;
+
+        return amount;
     }
 }
