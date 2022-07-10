@@ -47,7 +47,7 @@ public class RomanNumeralConverterTests
     [TestCase("XLVIbanana")]
     [TestCase("parachuteMM")]
     [TestCase("  \n \t \r ")]
-    public void FormRomanNumeralThrowsFormatExceptionOnInvalidInput(string invalid)
+    public void FromRomanNumeralThrowsFormatExceptionOnInvalidInput(string invalid)
     {
         var ex = Assert.Throws<FormatException>(() => RomanNumeralConverter.FromRomanNumeral(invalid));
         Assert.That(ex, Has.Message.Contains(invalid));

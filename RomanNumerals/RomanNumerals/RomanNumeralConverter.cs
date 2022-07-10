@@ -2,7 +2,7 @@
 
 namespace RomanNumerals;
 
-public class RomanNumeralConverter
+public static class RomanNumeralConverter
 {
     public static int FromRomanNumeral(string roman)
     {
@@ -10,19 +10,13 @@ public class RomanNumeralConverter
         var amount = 0;
 
         if (originalInput == null)
-        {
             throw new ArgumentNullException("Roman numeral cannot be null");
-        }
 
-        foreach (var definition in new [] {I, IV, V, IX, X, XL, L, XC, C, CM, M})
-        {
+        foreach (var definition in new [] {I, IV, V, IX, X, XL, L, XC, C, CM, M}) 
             (amount, roman) = CountTermIfPresent(amount, roman, definition);
-        }
 
         if (roman.Length > 0)
-        {
             throw new FormatException($"Invalid Roman Numeral: '{originalInput}'");
-        }
 
         return amount;
     }
