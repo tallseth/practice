@@ -8,26 +8,25 @@ public class RomanNumeralConverter
     {
         var amount = 0;
 
-        amount += roman.Reverse().TakeWhile(c => c.Equals('I')).Count();
-
-        roman = roman.TrimEnd('I');
-
-        if (roman.EndsWith("IV"))
-        {
-            amount += 4;
-            roman = roman.Substring(0, roman.Length - 2);
-        }
-        else if (roman.EndsWith("V"))
-        {
-            amount += 5;
-            roman = roman.Substring(0, roman.Length - 1);
-        }
-
-        if (roman.EndsWith("IX"))
-            amount += 9;
-        else if (roman.EndsWith("X")) 
-            amount += 10;        
+        (amount, roman) = CountTermIfPresent(amount, roman, "III", 3);
+        (amount, roman) = CountTermIfPresent(amount, roman, "II", 2);
+        (amount, roman) = CountTermIfPresent(amount, roman, "I", 1);
+        (amount, roman) = CountTermIfPresent(amount, roman, "IV", 4);
+        (amount, roman) = CountTermIfPresent(amount, roman, "V", 5);
+        (amount, roman) = CountTermIfPresent(amount, roman, "IX", 9);
+        (amount, roman) = CountTermIfPresent(amount, roman, "X", 10);
 
         return amount;
+    }
+
+    private static (int, string) CountTermIfPresent(int accumulator, string origin, string term, int termAmount)
+    {
+        if (origin.EndsWith(term))
+        {
+            accumulator += termAmount;
+            origin = origin.Substring(0, origin.Length - term.Length);
+        }
+        
+        return (accumulator, origin);
     }
 }
