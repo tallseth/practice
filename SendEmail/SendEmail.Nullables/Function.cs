@@ -1,5 +1,7 @@
-﻿using Amazon.Lambda.Core;
+﻿using System.Text.Json;
+using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
+using Amazon.SimpleEmail.Model;
 
 namespace SendEmail.Nullables;
 
@@ -12,18 +14,28 @@ public class Function
         
     }
 
-    private Function(EmailWrapper emailWrapper)
+    public Function(EmailWrapper emailWrapper)
     {
         _emailWrapper = emailWrapper;
     }
-
-    public static Function CreateNull()
+    
+    public async Task<SQSBatchResponse> FunctionHandler(SQSEvent input, ILambdaContext _)
     {
-        return new Function(EmailWrapper.CreateNull());
-    }
+        var batchResponse = new SQSBatchResponse();
 
-    public async Task<SQSBatchResponse> FunctionHandler(SQSEvent evnt, ILambdaContext context)
-    {
-        return await Task.FromResult(new SQSBatchResponse());
+        foreach (var record in input.Records)
+        {
+            var request = JsonSerializer.Deserialize<SendTemplatedEmailRequest>(record.Body);
+            try
+            {
+                await _emailWrapper.SendTemplatedEmail(request);
+            }
+            catch
+            {
+                batchResponse.BatchItemFailures.Add(new SQSBatchResponse.BatchItemFailure { ItemIdentifier = record.MessageId });
+            }
+        }
+        
+        return batchResponse;
     }
 }
