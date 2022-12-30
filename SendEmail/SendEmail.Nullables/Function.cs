@@ -8,7 +8,7 @@ public class Function
 {
     private readonly SqsAdapter<SendTemplatedEmailRequest> _sqsAdapter;
 
-    public Function() : this(EmailWrapper.Create())
+    public Function() : this(new SqsAdapter<SendTemplatedEmailRequest>(EmailMessageHandler.Create()))
     {
         
     }
@@ -17,7 +17,12 @@ public class Function
     {
         _sqsAdapter = new SqsAdapter<SendTemplatedEmailRequest>(EmailMessageHandler.Create(emailWrapper));
     }
-    
+
+    private Function(SqsAdapter<SendTemplatedEmailRequest> adapter)
+    {
+        _sqsAdapter = adapter;
+    }
+
     public async Task<SQSBatchResponse> FunctionHandler(SQSEvent input, ILambdaContext _)
     {
         return await _sqsAdapter.Adapt(input);
