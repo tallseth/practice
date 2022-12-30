@@ -1,25 +1,41 @@
-﻿using Amazon.Lambda.Core;
+﻿using System.Text.Json;
+using Amazon.Lambda.Core;
 using Amazon.Lambda.SQSEvents;
+using Amazon.SimpleEmail;
+using Amazon.SimpleEmail.Model;
 
 namespace SendEmail.Mocks;
 
 public class Function
 {
-    public async Task<SQSBatchResponse> FunctionHandler(SQSEvent evnt, ILambdaContext context)
+    private readonly IAmazonSimpleEmailService _emailService;
+
+    public Function() : this(new AmazonSimpleEmailServiceClient()) { }
+    
+    public Function(IAmazonSimpleEmailService emailService)
     {
-        foreach(var message in evnt.Records)
+        _emailService = emailService;
+        
+    }
+    
+    public async Task<SQSBatchResponse> FunctionHandler(SQSEvent input, ILambdaContext _)
+    {
+        var response = new SQSBatchResponse();
+        
+        foreach(var message in input.Records)
         {
-            await ProcessMessageAsync(message, context);
+            var request = JsonSerializer.Deserialize<SendTemplatedEmailRequest>(message.Body);
+            try
+            {
+                await _emailService.SendTemplatedEmailAsync(request);
+            }
+            catch
+            {
+                response.BatchItemFailures.Add(new SQSBatchResponse.BatchItemFailure{ ItemIdentifier = message.MessageId });
+            }
         }
 
-        return new SQSBatchResponse();
-    }
-
-    private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
-    {
-        context.Logger.LogInformation($"Processed message {message.Body}");
-
-        // TODO: Do interesting work based on the new message
-        await Task.CompletedTask;
+        return response;
     }
 }
+
