@@ -11,52 +11,35 @@ public abstract class EmailWrapper
  
     public static EmailWrapper Create()
     {
-        return new AwsImpl();
+        var aws = new AmazonSimpleEmailServiceClient();
+        return new FunctionImpl(aws.SendTemplatedEmailAsync);
     }
     
     public static EmailWrapper CreateNull(SendTemplatedEmailResponse? configuredResponse=null, Exception? configuredException=null)
     {
-        return new NullImpl(configuredResponse, configuredException);
+        return new FunctionImpl((_, _) =>
+        {
+            if (configuredException != null)
+                throw configuredException;
+
+            return Task.FromResult(configuredResponse ?? new SendTemplatedEmailResponse());
+        });
     }
 
-    private class AwsImpl : EmailWrapper
+    private class FunctionImpl : EmailWrapper
     {
-        private readonly IAmazonSimpleEmailService _emailService = new AmazonSimpleEmailServiceClient();
+        private Func<SendTemplatedEmailRequest, CancellationToken, Task<SendTemplatedEmailResponse>> _function;
         private readonly OutputListener<SendTemplatedEmailRequest> _outputListener = new();
-        
-        public override Task<SendTemplatedEmailResponse> SendTemplatedEmail(SendTemplatedEmailRequest request)
-        {
-            _outputListener.Observe(request);
-            return _emailService.SendTemplatedEmailAsync(request);
-        }
 
-        public override OutputTracker<SendTemplatedEmailRequest> TrackRequests()
+        public FunctionImpl(Func<SendTemplatedEmailRequest, CancellationToken, Task<SendTemplatedEmailResponse>> function)
         {
-            return _outputListener.CreateTracker();
-        }
-    }
-    
-    private class NullImpl : EmailWrapper
-    {
-        private readonly OutputListener<SendTemplatedEmailRequest> _outputListener = new();
-        private readonly Exception? _configuredException;
-        private readonly SendTemplatedEmailResponse _configuredResponse;
-
-        public NullImpl(SendTemplatedEmailResponse? configuredResponse, Exception? configuredException)
-        {
-            _configuredException = configuredException;
-            _configuredResponse = configuredResponse ?? new SendTemplatedEmailResponse();
+            _function = function;
         }
 
         public override Task<SendTemplatedEmailResponse> SendTemplatedEmail(SendTemplatedEmailRequest request)
         {
             _outputListener.Observe(request);
-            if (_configuredException != null)
-            {
-                throw _configuredException;
-            }
-            
-            return Task.FromResult(_configuredResponse);
+            return _function(request, CancellationToken.None);
         }
 
         public override OutputTracker<SendTemplatedEmailRequest> TrackRequests()
