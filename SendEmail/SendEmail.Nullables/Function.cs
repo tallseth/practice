@@ -5,21 +5,25 @@ namespace SendEmail.Nullables;
 
 public class Function
 {
-    public async Task<SQSBatchResponse> FunctionHandler(SQSEvent evnt, ILambdaContext context)
-    {
-        foreach(var message in evnt.Records)
-        {
-            await ProcessMessageAsync(message, context);
-        }
+    private readonly EmailWrapper _emailWrapper;
 
-        return new SQSBatchResponse();
+    public Function() : this(EmailWrapper.Create())
+    {
+        
     }
 
-    private async Task ProcessMessageAsync(SQSEvent.SQSMessage message, ILambdaContext context)
+    private Function(EmailWrapper emailWrapper)
     {
-        context.Logger.LogInformation($"Processed message {message.Body}");
+        _emailWrapper = emailWrapper;
+    }
 
-        // TODO: Do interesting work based on the new message
-        await Task.CompletedTask;
+    public static Function CreateNull()
+    {
+        return new Function(EmailWrapper.CreateNull());
+    }
+
+    public async Task<SQSBatchResponse> FunctionHandler(SQSEvent evnt, ILambdaContext context)
+    {
+        return await Task.FromResult(new SQSBatchResponse());
     }
 }

@@ -9,7 +9,7 @@ public class FunctionTests
     [Test]
     public async Task EmptyBatchDoesNotFail()
     {
-        var function = new Function();
+        var function = Function.CreateNull();
         var input = new SQSEvent { Records = new List<SQSEvent.SQSMessage>() };
         var context = new TestLambdaContext();
 
